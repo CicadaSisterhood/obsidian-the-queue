@@ -27,7 +27,7 @@ export class QueueNote {
     }
 
     public addScoreToHistory(btn: QueueButton) {
-        
+
     }
 
 
@@ -37,7 +37,11 @@ export class QueueNote {
         return true
     }
 
-    
+    public isFinished(): boolean {
+        return this.qData.stage === QueueNoteStage.Finished;
+    }
+
+
     public score(btn: QueueButton) {
         throw "scoring should be handled by derived class"
     }

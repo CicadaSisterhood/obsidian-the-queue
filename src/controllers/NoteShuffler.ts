@@ -40,6 +40,8 @@ export class NoteShuffler {
             }
         })
         )
+        // TODO: need to watch for created files and add them if they're not in an excluded directory
+        // or of the exclude template
     }
 
     public async getDueNote(): Promise<QueueNote | null> {
@@ -62,7 +64,11 @@ export class NoteShuffler {
     }
 
     private async loadNotes() {
-        const allFiles = getAllMdFiles();
+        // TODO: put this behind a setting lmao
+        const allFiles = getAllMdFiles().filter(x => !x.path.contains("zTemplates"));
+
+        console.log(allFiles);
+
         try {
             const notes: QueueNote[] = []
             for (const file of allFiles) {
@@ -80,10 +86,12 @@ export class NoteShuffler {
     }
 
     private getDueNoteFromAllNotes(): QueueNote | null {
+        // TODO: this ought to prioritize notes that are "Due" (have a due date of today or in the past)
+        // over notes that are "due" (don't have a due date)
         const templateToPick = this.getRandomTemplateToPick()
         const notesToPickFrom = this.decideWhichNotesToPickFrom()
 
-        const simplyAllDueNotes = notesToPickFrom.filter(note => note.isDue() && note !== this.noteToExcludeBecauseWeJustHadIt)
+        const simplyAllDueNotes = notesToPickFrom.filter(note => note.isDue() && !note.isFinished() && note !== this.noteToExcludeBecauseWeJustHadIt)
         const notesWithDesiredTemplate = simplyAllDueNotes.filter(note => note.qData.template === templateToPick)
 
         // return a note with desired template, if we have none, return any due note
